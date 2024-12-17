@@ -23,4 +23,11 @@ public class ItemRating {
     private float rating;
 
     private String comment;
+
+    public ItemRating(Item item, User user, float rating, String comment) {
+        this.item = item;
+        this.user = user;
+        this.rating = rating;
+        this.comment = comment;
+    }
 }

@@ -1,0 +1,17 @@
+<nav>
+    <div class="nav-container">
+        <ul class="nav-links">
+            <li><a th:href="@{/items}">Items</a></li>
+            <li><a th:href="@{/items/cart}">User Cart</a></li>
+            <li><a th:href="@{/orders}">Orders</a></li>
+            <li><a th:if="${session.user == null}" th:href="@{/login}">Login</a></li>
+            <li><a th:if="${session.user != null}" th:href="@{/logout}">Logout</a></li>
+            <li th:if="${session.user != null}"><span th:text="${session.user.getUsername()}"></span></li>
+            <li th:if="${session.user == null}"><a th:href="@{/register}">Register</a></li>
+            <li th:if="${session.user != null && session.user.getType() != null && session.user.getType().name().equals('ADMIN')}">
+                <a th:href="@{/items/new}">Add New Item</a></li>
+            <li th:if="${session.user != null && session.user.getType() != null && session.user.getType().name().equals('DELIVERER')}">
+                <a th:href="@{/all-orders}">All Orders</a></li>
+        </ul>
+    </div>
+</nav>

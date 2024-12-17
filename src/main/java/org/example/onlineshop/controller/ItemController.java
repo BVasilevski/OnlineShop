@@ -1,20 +1,17 @@
 package org.example.onlineshop.controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.example.onlineshop.model.Item;
-import org.example.onlineshop.model.ItemInCart;
-import org.example.onlineshop.model.User;
+import org.example.onlineshop.model.*;
 import org.example.onlineshop.model.enumerations.Category;
 import org.example.onlineshop.repository.ItemInCartRepository;
-import org.example.onlineshop.service.ItemInCartService;
-import org.example.onlineshop.service.ItemService;
-import org.example.onlineshop.service.UserService;
+import org.example.onlineshop.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/items")
@@ -22,11 +19,15 @@ public class ItemController {
     private final ItemService itemService;
     private final ItemInCartService itemInCartService;
     private final UserService userService;
+    private final OrderService orderService;
+    private final ItemRatingService itemRatingService;
 
-    public ItemController(ItemService itemService, ItemInCartService itemInCartService, UserService userService) {
+    public ItemController(ItemService itemService, ItemInCartService itemInCartService, UserService userService, OrderService orderService, ItemRatingService itemRatingService) {
         this.itemService = itemService;
         this.itemInCartService = itemInCartService;
         this.userService = userService;
+        this.orderService = orderService;
+        this.itemRatingService = itemRatingService;
     }
 
     @GetMapping
@@ -130,5 +131,27 @@ public class ItemController {
         return "item-list";
     }
 
+    @GetMapping("/checkout")
+    public String placeOrder(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        List<ItemInCart> items = itemInCartService.getAll();
+        List<Item> orderedItems = items.stream().filter(item -> item.getUser().getUsername().equals(user.getUsername())).map(ItemInCart::getItem).toList();
+        double totalPrice = items.stream().mapToDouble(item -> item.getItem().getPrice() * item.getQuantity()).sum();
+        Order order = new Order((float) totalPrice, user, orderedItems);
+        this.orderService.saveOrder(order);
+        return "redirect:/orders";
+    }
+
+    @PostMapping("/review")
+    public String addReviewForItem(@RequestParam Long itemId,
+                                   @RequestParam String comment,
+                                   @RequestParam Float rating,
+                                   HttpSession session) {
+        Item item = itemService.findById(itemId);
+        User user = (User) session.getAttribute("user");
+        ItemRating itemRating = new ItemRating(item, user, rating, comment);
+        this.itemRatingService.save(itemRating);
+        return "redirect:/items";
+    }
 }
 
