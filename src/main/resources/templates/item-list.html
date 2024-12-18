@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,9 +89,8 @@
             <div class="row mt-3">
                 <!-- Sort By Price -->
                 <div class="col-md-3">
-                    <!-- Other filters (name, category, etc.) -->
                     <label for="sortDirection">Sort Price:</label>
-                    <select name="sortDirection" id="sortDirection">
+                    <select class="form-select" name="sortDirection" id="sortDirection">
                         <option value="asc" th:selected="${sortDirection == 'asc'}">Ascending</option>
                         <option value="desc" th:selected="${sortDirection == 'desc'}">Descending</option>
                     </select>
@@ -116,48 +115,69 @@
                         <p>
                             <strong>Avg Rating:</strong>
                             <span>
+                                <!-- Show "No Ratings" if avgRating is 0 -->
+                                <span th:if="${item.avgRating == 0}">No Ratings</span>
+
                                 <!-- Full Stars -->
-                                <span th:each="i : ${#numbers.sequence(1, item.avgRating.intValue())}">
+                                <span th:each="i : ${#numbers.sequence(1, item.avgRating.intValue())}"
+                                      th:if="${item.avgRating > 0}">
                                     ★
                                 </span>
 
                                 <!-- Half Star (if applicable) -->
-                                <span th:if="${item.avgRating.intValue() < item.avgRating}">
+                                <span th:if="${item.avgRating > 0 && item.avgRating.intValue() < item.avgRating}">
                                     ⯨
                                 </span>
 
                                 <!-- Empty Stars -->
-                                <span th:each="i : ${#numbers.sequence(item.avgRating.intValue() + (item.avgRating.intValue() < item.avgRating ? 1 : 0) + 1, 5)}">
+                                <span th:each="i : ${#numbers.sequence(item.avgRating.intValue() +
+                                                     (item.avgRating.intValue() < item.avgRating ? 1 : 0) + 1, 5)}"
+                                      th:if="${item.avgRating > 0}">
                                     ☆
                                 </span>
                             </span>
                         </p>
 
-                        <div class="mt-auto">
+                        <div class="d-flex gap-2 mt-auto">
                             <!-- Add to Cart Button -->
-                            <form th:action="@{/items/add}" method="POST" class="d-inline">
+                            <form th:if="${session.user == null || (session.user != null && session.user.getType().name() == 'USER')}"
+                                  th:action="@{/items/add}" method="POST">
                                 <input type="hidden" name="itemId" th:value="${item.id}">
                                 <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
                             </form>
+
                             <!-- Add Review Button -->
-                            <button th:if="${session.user != null}" type="button"
-                                    class="btn btn-outline-secondary btn-sm ms-2"
+                            <button th:if="${session.user != null && session.user.getType().name() == 'USER'}"
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-sm"
                                     onclick="toggleReviewForm(this)">
                                 Add Review
                             </button>
-                        </div>
+                            <!-- Edit Item Button (Admin Only) -->
+                            <form th:if="${session.user != null && session.user.getType().name() == 'ADMIN'}"
+                                  th:action="@{/items/edit}" method="GET">
+                                <input type="hidden" name="itemId" th:value="${item.id}">
+                                <button type="submit" class="btn btn-warning btn-sm">Edit Item</button>
+                            </form>
 
+                            <!-- See Reviews Button -->
+                            <button type="button"
+                                    class="btn btn-info btn-sm"
+                                    th:onclick="'window.location.href=\'/items/reviews/' + ${item.id} + '\';'">
+                                See Reviews
+                            </button>
+                        </div>
                         <!-- Review Form -->
                         <form class="review-form mt-3" th:action="@{/items/review}" method="POST">
                             <input type="hidden" name="itemId" th:value="${item.id}">
                             <div class="mb-2">
                                 <label for="review" class="form-label">Write your review:</label>
-                                <textarea name="comment" class="form-control" rows="3"
+                                <textarea name="comment" id="review" class="form-control" rows="3"
                                           placeholder="Enter your comment"></textarea>
                             </div>
                             <div class="mb-2">
                                 <label for="rating" class="form-label">Rating:</label>
-                                <input type="number" name="rating" class="form-control" min="1" max="5"
+                                <input type="number" id="rating" name="rating" class="form-control" min="1" max="5"
                                        placeholder="Rate (1-5)">
                             </div>
                             <button type="submit" class="btn btn-success btn-sm">Submit Review</button>

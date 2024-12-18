@@ -76,10 +76,19 @@ public class ItemController {
         // koshnickata e vo sesija
         if (!userService.exists(user.getUsername())) {
             List<ItemInCart> itemInCarts = (List<ItemInCart>) session.getAttribute("itemInCarts");
+            float totalPrice;
+            if (itemInCarts == null) {
+                totalPrice = 0.0F;
+            } else {
+                totalPrice = (float) itemInCarts.stream().mapToDouble(item -> item.getQuantity() * item.getItem().getPrice()).sum();
+            }
             model.addAttribute("itemsInCart", itemInCarts);
+            model.addAttribute("totalPrice", totalPrice);
         } else {
             List<ItemInCart> items = itemInCartService.getAll();
             items = items.stream().filter(item -> item.getUser().getUsername().equals(user.getUsername())).toList();
+            float totalPrice = (float) items.stream().mapToDouble(item -> item.getQuantity() * item.getItem().getPrice()).sum();
+            model.addAttribute("totalPrice", totalPrice);
             model.addAttribute("itemsInCart", items);
         }
         return "cart";
@@ -153,5 +162,40 @@ public class ItemController {
         this.itemRatingService.save(itemRating);
         return "redirect:/items";
     }
+
+    @PostMapping("/cart/delete")
+    public String removeItemFromCart(@RequestParam Long itemId, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        this.itemInCartService.removeFromUserCart(user, itemId);
+        return "redirect:/items/cart";
+    }
+
+    @GetMapping("/edit")
+    public String showEditPage(@RequestParam Long itemId, Model model) {
+        Item item = itemService.findById(itemId);
+        model.addAttribute("item", item);
+        model.addAttribute("categories", Category.values());
+        return "edit-item";
+    }
+
+    @PostMapping("/update")
+    public String updateItem(@RequestParam Long itemId,
+                             @RequestParam String name,
+                             @RequestParam String imageUrl,
+                             @RequestParam Float price,
+                             @RequestParam Category category) {
+        this.itemService.update(itemId, name, imageUrl, price, category);
+        return "redirect:/items";
+    }
+
+    @GetMapping("/reviews/{id}")
+    public String getItemReviews(@PathVariable Long id, Model model) {
+        Item item = itemService.findById(id); // Fetch the item
+        List<ItemRating> reviews = itemRatingService.findReviewsForItem(item);
+        model.addAttribute("item", item);
+        model.addAttribute("reviews", reviews);
+        return "item-reviews"; // Thymeleaf template for reviews
+    }
+
 }
 

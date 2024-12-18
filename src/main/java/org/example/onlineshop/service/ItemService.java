@@ -3,7 +3,10 @@ package org.example.onlineshop.service;
 import jakarta.persistence.criteria.Predicate;
 import org.example.onlineshop.model.Item;
 import org.example.onlineshop.model.ItemInCart;
+import org.example.onlineshop.model.ItemRating;
 import org.example.onlineshop.model.User;
+import org.example.onlineshop.model.enumerations.Category;
+import org.example.onlineshop.repository.ItemRatingRepository;
 import org.example.onlineshop.repository.ItemRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,10 +19,12 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final ItemInCartService itemInCartService;
+    private final ItemRatingRepository itemRatingRepository;
 
-    public ItemService(ItemRepository productRepository, ItemInCartService itemInCartService) {
+    public ItemService(ItemRepository productRepository, ItemInCartService itemInCartService, ItemRatingRepository itemRatingRepository) {
         this.itemRepository = productRepository;
         this.itemInCartService = itemInCartService;
+        this.itemRatingRepository = itemRatingRepository;
     }
 
     // Save or update product
@@ -103,5 +108,21 @@ public class ItemService {
         }
 
         return itemRepository.findAll(specification, sort);
+    }
+
+    public void update(Long itemId, String name, String imageUrl, Float price, Category category) {
+        Item item = this.findById(itemId);
+        item.setName(name);
+        item.setImageUrl(imageUrl);
+        item.setPrice(price);
+        item.setCategory(category);
+        this.itemRepository.save(item);
+    }
+
+    public void calculateAvgRating(Item item) {
+        List<ItemRating> ratingsForItem = this.itemRatingRepository.findAllByItem(item);
+        double avgRating = ratingsForItem.stream().mapToDouble(ItemRating::getRating).average().getAsDouble();
+        item.setAvgRating((float) avgRating);
+        itemRepository.save(item);
     }
 }

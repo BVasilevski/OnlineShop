@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
 public class ItemRating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,5 +28,28 @@ public class ItemRating {
         this.user = user;
         this.rating = rating;
         this.comment = comment;
+    }
+
+    public ItemRating() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public String getComment() {
+        return comment;
     }
 }
