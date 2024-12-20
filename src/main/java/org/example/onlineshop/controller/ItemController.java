@@ -3,15 +3,13 @@ package org.example.onlineshop.controller;
 import jakarta.servlet.http.HttpSession;
 import org.example.onlineshop.model.*;
 import org.example.onlineshop.model.enumerations.Category;
-import org.example.onlineshop.repository.ItemInCartRepository;
 import org.example.onlineshop.service.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/items")
@@ -147,8 +145,8 @@ public class ItemController {
         List<Item> orderedItems = items.stream().filter(item -> item.getUser().getUsername().equals(user.getUsername())).map(ItemInCart::getItem).toList();
         double totalPrice = items.stream().mapToDouble(item -> item.getItem().getPrice() * item.getQuantity()).sum();
         Order order = new Order((float) totalPrice, user, orderedItems);
-        this.orderService.saveOrder(order);
-        return "redirect:/orders";
+        session.setAttribute("order", order);
+        return "payment-page";
     }
 
     @PostMapping("/review")

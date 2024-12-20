@@ -2,19 +2,13 @@ package org.example.onlineshop.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.example.onlineshop.model.enumerations.UserType;
-//import org.springframework.security.core.GrantedAuthority;
-//import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
-@Data
-@Getter
 @Table(name = "users")
 public class User {
     @Id
@@ -55,6 +49,7 @@ public class User {
         this.streetNumber = streetNumber;
         this.houseNumber = houseNumber;
         this.discount = 0.0F;
+        this.type = UserType.USER;
         this.cartItems = new HashSet<>();
         this.ratings = new HashSet<>();
         this.orders = new HashSet<>();
@@ -109,6 +104,10 @@ public class User {
 
     public Set<Order> getOrders() {
         return orders;
+    }
+
+    public void setDiscount(float discount) {
+        this.discount = discount;
     }
 
     //    @Override

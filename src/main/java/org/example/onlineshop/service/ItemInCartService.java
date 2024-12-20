@@ -1,11 +1,11 @@
 package org.example.onlineshop.service;
 
 import jakarta.transaction.Transactional;
-import org.example.onlineshop.model.Item;
 import org.example.onlineshop.model.ItemInCart;
 import org.example.onlineshop.model.User;
 import org.example.onlineshop.repository.ItemInCartRepository;
 import org.example.onlineshop.repository.ItemRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +25,8 @@ public class ItemInCartService {
     }
 
     public List<ItemInCart> getAll() {
-        return itemInCartRepository.findAll();
+        Sort sort = Sort.by("quantity").descending();
+        return itemInCartRepository.findAll(sort);
     }
 
     @Transactional
@@ -35,5 +36,10 @@ public class ItemInCartService {
 
     public void removeFromUserCart(User user, Long itemId) {
         this.itemInCartRepository.deleteById(itemId);
+    }
+
+    public void removeItemsFromCart(User user) {
+        List<ItemInCart> items = itemInCartRepository.findAllByUser(user);
+        items.forEach(item -> itemInCartRepository.deleteById(item.getId()));
     }
 }

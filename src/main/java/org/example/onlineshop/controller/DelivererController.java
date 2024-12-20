@@ -20,6 +20,6 @@ public class DelivererController {
     public String getAllOrders(Model model) {
         List<Order> orderList = this.orderService.findAll();
         model.addAttribute("orders", orderList);
-        return "all-orders";
+        return "orders";
     }
 }

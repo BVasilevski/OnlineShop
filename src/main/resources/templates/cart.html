@@ -119,6 +119,12 @@
         <p>Total Price:
             <span th:text="${totalPrice}">0</span>
         </p>
+        <p>Discount:
+            <span th:text="${(session.user.getDiscount()) * 100} + '%'">0</span>
+        </p>
+        <p>Price to pay:
+            <span th:text="${totalPrice - (totalPrice * (session.user.getDiscount()))}">0</span>
+        </p>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

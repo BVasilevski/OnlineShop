@@ -8,6 +8,8 @@ import org.example.onlineshop.service.OrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -30,5 +32,11 @@ public class OrderController {
         }
         model.addAttribute("orders", orders);
         return "orders";
+    }
+
+    @PostMapping("/orders")
+    public String markAsDelivered(@RequestParam Long id) {
+        this.orderService.markAsDelivered(id);
+        return "redirect:/orders";
     }
 }

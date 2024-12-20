@@ -26,4 +26,10 @@ public class OrderService {
     public List<Order> findAll() {
         return this.orderRepository.findAll();
     }
+
+    public void markAsDelivered(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order doesn't exist."));
+        order.setDelivered(!order.isDelivered());
+        orderRepository.save(order);
+    }
 }
