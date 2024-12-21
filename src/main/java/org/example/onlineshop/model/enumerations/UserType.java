@@ -1,5 +1,5 @@
 package org.example.onlineshop.model.enumerations;
 
 public enum UserType {
-    USER, ADMIN, DELIVERER
+    USER, ADMIN, DELIVERER, TEMPORARY
 }

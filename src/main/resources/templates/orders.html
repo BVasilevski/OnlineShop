@@ -22,7 +22,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">Order #<span th:text="${order.getId()}">1</span></h5>
-                        <p><strong>Total Price:</strong> <span th:text="${order.totalPrice}">$100.00</span></p>
+                        <p><strong>Total Price:</strong> <span th:text="${order.totalPrice} + 'ден'">$100.00</span></p>
                         <p>
                             <strong>Status:</strong>
                             <span th:text="${order.delivered ? 'Delivered' : 'Not Delivered'}">Not Delivered</span>
@@ -33,7 +33,7 @@
                             <!-- Iterate through the items in the order -->
                             <li th:each="item : ${order.items}">
                                 <span th:text="${item.name}">Item Name</span> -
-                                <span th:text="${item.price}">$10.00</span>
+                                <span th:text="${item.price} + 'ден'">$10.00</span>
                             </li>
                         </ul>
                         <div th:if="${session.user != null && session.user.getType().name() == 'DELIVERER'}">

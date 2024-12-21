@@ -3,13 +3,18 @@ package org.example.onlineshop.controller;
 import jakarta.servlet.http.HttpSession;
 import org.example.onlineshop.model.*;
 import org.example.onlineshop.model.enumerations.Category;
-import org.example.onlineshop.service.*;
+import org.example.onlineshop.model.enumerations.UserType;
+import org.example.onlineshop.service.ItemInCartService;
+import org.example.onlineshop.service.ItemRatingService;
+import org.example.onlineshop.service.ItemService;
+import org.example.onlineshop.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Controller
 @RequestMapping("/items")
@@ -17,18 +22,16 @@ public class ItemController {
     private final ItemService itemService;
     private final ItemInCartService itemInCartService;
     private final UserService userService;
-    private final OrderService orderService;
     private final ItemRatingService itemRatingService;
 
-    public ItemController(ItemService itemService, ItemInCartService itemInCartService, UserService userService, OrderService orderService, ItemRatingService itemRatingService) {
+    public ItemController(ItemService itemService, ItemInCartService itemInCartService, UserService userService, ItemRatingService itemRatingService) {
         this.itemService = itemService;
         this.itemInCartService = itemInCartService;
         this.userService = userService;
-        this.orderService = orderService;
         this.itemRatingService = itemRatingService;
     }
 
-    @GetMapping
+    @GetMapping({"", "/"})
     public String listItems(Model model) {
         List<Item> items = itemService.findAll();
         model.addAttribute("items", items);
@@ -55,24 +58,17 @@ public class ItemController {
         return "redirect:/items";
     }
 
-
-    @GetMapping("/delete/{id}")
-    public String deleteItem(@PathVariable("id") Long id) {
-        itemService.delete(id);
-        return "redirect:/items";
-    }
-
     @GetMapping("/cart")
     public String getItemsInCart(HttpSession session,
                                  Model model) {
         if (session.getAttribute("user") == null) {
-            User user = new User();
+            User user = new User(UserType.TEMPORARY);
             session.setAttribute("user", user);
         }
 
         User user = (User) session.getAttribute("user");
         // koshnickata e vo sesija
-        if (!userService.exists(user.getUsername())) {
+        if (user.getType().equals(UserType.TEMPORARY)) {
             List<ItemInCart> itemInCarts = (List<ItemInCart>) session.getAttribute("itemInCarts");
             float totalPrice;
             if (itemInCarts == null) {
@@ -97,17 +93,18 @@ public class ItemController {
                             HttpSession session) {
         User user;
         if (session.getAttribute("user") == null) {
-            user = new User();
+            user = new User(UserType.TEMPORARY);
             session.setAttribute("user", user);
         }
         user = (User) session.getAttribute("user");
-        if (!userService.exists(user.getUsername())) {
+        if (user.getType().equals(UserType.TEMPORARY)) {
+            Random random = new Random();
             List<ItemInCart> itemInCarts;
             if (session.getAttribute("itemInCarts") == null) {
                 itemInCarts = new ArrayList<>();
                 session.setAttribute("itemInCarts", itemInCarts);
             }
-            ItemInCart itemInCart = new ItemInCart(user, itemService.findById(itemId), 1);
+            ItemInCart itemInCart = new ItemInCart(random.nextLong(), user, itemService.findById(itemId), 1);
             itemInCarts = (List<ItemInCart>) session.getAttribute("itemInCarts");
             itemInCarts.add(itemInCart);
             session.setAttribute("itemInCarts", itemInCarts);
@@ -139,13 +136,15 @@ public class ItemController {
     }
 
     @GetMapping("/checkout")
-    public String placeOrder(HttpSession session) {
+    public String placeOrder(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         List<ItemInCart> items = itemInCartService.getAll();
         List<Item> orderedItems = items.stream().filter(item -> item.getUser().getUsername().equals(user.getUsername())).map(ItemInCart::getItem).toList();
         double totalPrice = items.stream().mapToDouble(item -> item.getItem().getPrice() * item.getQuantity()).sum();
-        Order order = new Order((float) totalPrice, user, orderedItems);
+        float amount = (float) (totalPrice - (totalPrice * user.getDiscount()));
+        Order order = new Order(amount, user, orderedItems);
         session.setAttribute("order", order);
+        model.addAttribute("amount", amount);
         return "payment-page";
     }
 
@@ -164,7 +163,22 @@ public class ItemController {
     @PostMapping("/cart/delete")
     public String removeItemFromCart(@RequestParam Long itemId, HttpSession session) {
         User user = (User) session.getAttribute("user");
-        this.itemInCartService.removeFromUserCart(user, itemId);
+        if (user.getType().equals(UserType.TEMPORARY)) {
+            List<ItemInCart> itemInCarts = (List<ItemInCart>) session.getAttribute("itemInCarts");
+            ItemInCart itemInCart = null;
+            for (ItemInCart item : itemInCarts) {
+                if (item.getId().equals(itemId)) {
+                    itemInCart = item;
+                    break;
+                }
+            }
+            if (itemInCart != null) {
+                itemInCarts.remove(itemInCart);
+            }
+            session.setAttribute("itemInCarts", itemInCarts);
+        } else {
+            this.itemInCartService.removeFromUserCart(user, itemId);
+        }
         return "redirect:/items/cart";
     }
 
@@ -193,6 +207,12 @@ public class ItemController {
         model.addAttribute("item", item);
         model.addAttribute("reviews", reviews);
         return "item-reviews"; // Thymeleaf template for reviews
+    }
+
+    @PostMapping("/delete")
+    public String deleteItem(@RequestParam Long itemId) {
+        this.itemService.delete(itemId);
+        return "redirect:/items";
     }
 
 }

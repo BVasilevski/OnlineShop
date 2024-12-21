@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Shopping Cart</title>
@@ -106,7 +106,7 @@
             <td th:text="${item.quantity * item.item.price}">Total</td>
             <td>
                 <form method="post" th:action="@{/items/cart/delete}">
-                    <input type="hidden" name="itemId" th:value="${item.getId()}">
+                    <input type="hidden" name="itemId" th:value="${item.id}">
                     <button type="submit" style="color: red; background-color: transparent; font-size: medium">X
                     </button>
                 </form>

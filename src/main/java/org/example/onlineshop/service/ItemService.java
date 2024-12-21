@@ -69,7 +69,8 @@ public class ItemService {
 
             // Filter by name
             if (name != null && !name.isEmpty()) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get("name"), "%" + name + "%"));
+                predicate = criteriaBuilder.and(predicate,
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
             }
 
             // Filter by category

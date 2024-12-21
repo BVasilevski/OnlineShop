@@ -1,6 +1,8 @@
 package org.example.onlineshop.service;
 
+import org.example.onlineshop.model.Order;
 import org.example.onlineshop.model.User;
+import org.example.onlineshop.repository.OrderRepository;
 import org.example.onlineshop.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -9,9 +11,11 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, OrderRepository orderRepository) {
         this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
     }
 
     public boolean exists(String username) {
@@ -43,5 +47,27 @@ public class UserService {
 
     public void saveUserWithDiscount(User user) {
         this.userRepository.save(user);
+    }
+
+    public User findByUsernameAndPassword(String username, String password) {
+        if (this.userRepository.findByUsernameAndPassword(username, password) != null) {
+            return this.userRepository.findByUsernameAndPassword(username, password);
+        }
+        return null;
+    }
+
+    public void incrementUserDiscount(User user) {
+        // increment by 2%
+        user.setDiscount((float) (user.getDiscount() + 0.02));
+        List<Order> ordersFromUser = orderRepository.getOrdersByUser(user);
+        // napravil 5, 10, 15 itn naracka
+        if (ordersFromUser.size() % 5 == 0) {
+            user.setDiscount((float) (user.getDiscount() + 0.05));
+        }
+
+        if (user.getDiscount() > 0.5) {
+            user.setDiscount(0.5F);
+        }
+        userRepository.save(user);
     }
 }

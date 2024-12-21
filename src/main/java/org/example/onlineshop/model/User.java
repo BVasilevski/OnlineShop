@@ -55,6 +55,10 @@ public class User {
         this.orders = new HashSet<>();
     }
 
+    public User(UserType type) {
+        this.type = type;
+    }
+
     public User() {
     }
 

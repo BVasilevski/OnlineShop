@@ -2,6 +2,7 @@ package org.example.onlineshop.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.onlineshop.model.User;
+import org.example.onlineshop.service.ItemInCartService;
 import org.example.onlineshop.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,9 +16,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final ItemInCartService itemInCartService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, ItemInCartService itemInCartService) {
         this.userService = userService;
+        this.itemInCartService = itemInCartService;
     }
 
     @GetMapping("/login")
@@ -28,16 +31,17 @@ public class UserController {
     @PostMapping("/login")
     public String loginUser(@RequestParam String username,
                             @RequestParam String password,
-                            HttpSession session) {
+                            HttpSession session,
+                            Model model) {
         User user = null;
-        if (userService.exists(username)) {
-            user = userService.findByUsername(username);
+        if (userService.findByUsernameAndPassword(username, password) != null) {
+            user = userService.findByUsernameAndPassword(username, password);
+            session.setAttribute("user", user);
+            return "redirect:/items";
         } else {
-            user = new User("Bojan", "Vasilevski", username, password, "7", "38A");
-            this.userService.save(user);
+            model.addAttribute("error", "Incorrect username or password.");
+            return "login";
         }
-        session.setAttribute("user", user);
-        return "redirect:/items";
     }
 
     @GetMapping("/logout")
