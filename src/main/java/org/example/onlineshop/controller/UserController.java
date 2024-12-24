@@ -1,8 +1,10 @@
 package org.example.onlineshop.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.example.onlineshop.model.ShopRating;
 import org.example.onlineshop.model.User;
 import org.example.onlineshop.service.ItemInCartService;
+import org.example.onlineshop.service.ShopRatingService;
 import org.example.onlineshop.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,10 +19,12 @@ public class UserController {
 
     private final UserService userService;
     private final ItemInCartService itemInCartService;
+    private final ShopRatingService shopRatingService;
 
-    public UserController(UserService userService, ItemInCartService itemInCartService) {
+    public UserController(UserService userService, ItemInCartService itemInCartService, ShopRatingService shopRatingService) {
         this.userService = userService;
         this.itemInCartService = itemInCartService;
+        this.shopRatingService = shopRatingService;
     }
 
     @GetMapping("/login")
@@ -85,6 +89,34 @@ public class UserController {
         User user = this.userService.findByUsername(username);
         user.setDiscount(discount);
         userService.saveUserWithDiscount(user);
+        return "redirect:/admin/users";
+    }
+
+    @GetMapping("/rating")
+    public String getRatingPage() {
+        return "rating_page";
+    }
+
+    @GetMapping("/ratings")
+    public String showStoreRatings(Model model) {
+        List<ShopRating> ratings = this.shopRatingService.findAll();
+        model.addAttribute("ratings", ratings);
+        return "ratings";
+    }
+
+    @PostMapping("/submitRating")
+    public String addRatingForStore(@RequestParam Integer rating,
+                                    @RequestParam String comment,
+                                    HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        ShopRating shopRating = new ShopRating(comment, rating, user);
+        this.shopRatingService.save(shopRating);
+        return "redirect:/ratings";
+    }
+
+    @PostMapping("/users/remove")
+    public String removeUser(@RequestParam String username) {
+        this.userService.removeUserWithUsername(username);
         return "redirect:/admin/users";
     }
 }

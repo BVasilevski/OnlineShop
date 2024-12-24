@@ -49,6 +49,12 @@
             </select>
         </div>
 
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity:</label>
+            <input type="number" name="quantity" id="quantity" class="form-control"
+                   th:value="${item != null} ? ${item.quantity} : ''" required/>
+        </div>
+
         <button type="submit" class="btn btn-primary" th:text="${item != null} ? 'Update Item' : 'Create Item'">
             Update Item
         </button>

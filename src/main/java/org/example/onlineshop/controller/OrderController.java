@@ -39,4 +39,10 @@ public class OrderController {
         this.orderService.markAsDelivered(id);
         return "redirect:/orders";
     }
+
+    @PostMapping("/orders/cancel")
+    public String cancelOrder(@RequestParam Long orderId) {
+        this.orderService.deleteOrder(orderId);
+        return "redirect:/orders";
+    }
 }

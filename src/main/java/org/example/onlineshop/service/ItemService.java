@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -111,12 +112,14 @@ public class ItemService {
         return itemRepository.findAll(specification, sort);
     }
 
-    public void update(Long itemId, String name, String imageUrl, Float price, Category category) {
+    public void update(Long itemId, String name, String imageUrl, Float price, Category category, LocalDate date, int quantity) {
         Item item = this.findById(itemId);
         item.setName(name);
         item.setImageUrl(imageUrl);
         item.setPrice(price);
         item.setCategory(category);
+        item.setDateCreated(date);
+        item.setQuantity(quantity);
         this.itemRepository.save(item);
     }
 
@@ -125,5 +128,11 @@ public class ItemService {
         double avgRating = ratingsForItem.stream().mapToDouble(ItemRating::getRating).average().getAsDouble();
         item.setAvgRating((float) avgRating);
         itemRepository.save(item);
+    }
+
+    public List<Item> getNewItems() {
+        List<Item> allItems = findAll();
+        LocalDate after = LocalDate.now().minusDays(7);
+        return this.itemRepository.findAllByDateCreatedAfter(after);
     }
 }

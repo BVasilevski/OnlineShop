@@ -65,7 +65,9 @@ public class PaymentController {
     @GetMapping("/clear_cart")
     public ResponseEntity<?> clearUserCart(HttpSession session) {
         User user = (User) session.getAttribute("user");
-        orderService.saveOrder((Order) session.getAttribute("order"));
+        Order order = (Order) session.getAttribute("order");
+        userService.incrementUserDiscount(user);
+        orderService.saveOrder(order);
         session.removeAttribute("order");
         itemInCartService.removeItemsFromCart(user);
         return ResponseEntity.ok("Payment created successfully.");

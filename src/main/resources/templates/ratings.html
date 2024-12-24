@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .star-rating {
+            color: gold;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="navigation.html"></div>
+<div class="container my-5">
+    <h2>Store Reviews</h2>
+
+    <!-- Iterate over the list of reviews -->
+    <div th:each="review : ${ratings}">
+        <div class="card mb-3">
+            <div class="card-body">
+                <!-- Review ID -->
+                <h5 class="card-title"><span th:text="${review.id} + '.'"></span></h5>
+
+                <!-- Rating (Stars) -->
+                <div class="mb-3">
+                    <strong>Rating:</strong>
+                    <span class="star-rating">
+                        <!-- Display stars based on the rating -->
+                        <span th:text="${review.rating == 5 ? '★★★★★' : ''}"></span>
+                        <span th:text="${review.rating == 4 ? '★★★★☆' : ''}"></span>
+                        <span th:text="${review.rating == 3 ? '★★★☆☆' : ''}"></span>
+                        <span th:text="${review.rating == 2 ? '★★☆☆☆' : ''}"></span>
+                        <span th:text="${review.rating == 1 ? '★☆☆☆☆' : ''}"></span>
+                    </span>
+                </div>
+
+                <!-- Comment -->
+                <div class="mb-3">
+                    <strong>Comment:</strong>
+                    <p th:text="${review.comment}"></p>
+                </div>
+
+                <!-- User Info -->
+                <div>
+                    <strong>User:</strong>
+                    <p th:text="${review.user.username}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

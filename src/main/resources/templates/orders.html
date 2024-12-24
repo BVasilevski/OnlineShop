@@ -42,6 +42,14 @@
                                 <button class="btn btn-info" type="submit">Change status</button>
                             </form>
                         </div>
+                        <div style="text-align: center">
+                            <form method="post"
+                                  th:if="${session.user != null && order.getUser().username.equals(session.user.username)}"
+                                  th:action="@{/orders/cancel}">
+                                <input type="hidden" th:value="${order.getId()}" name="orderId">
+                                <button type="submit" class="btn btn-danger">Cancel Order</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

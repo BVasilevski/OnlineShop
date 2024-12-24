@@ -45,6 +45,10 @@
     <!-- Loop through users -->
     <div th:each="user : ${users}">
         <div class="user-row">
+            <form method="post" th:action="@{/users/remove}">
+                <input type="hidden" name="username" th:value="${user.getUsername()}">
+                <button type="submit" class="btn btn-danger">Remove user</button>
+            </form>
             <div>
                 <strong>Name:</strong> <span th:text="${user.name}">John</span>
             </div>

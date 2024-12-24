@@ -41,6 +41,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Order> orders;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ShopRating> shopRatings;
+
     public User(String name, String lastName, String username, String password, String streetNumber, String houseNumber) {
         this.name = name;
         this.lastName = lastName;
@@ -53,6 +56,7 @@ public class User {
         this.cartItems = new HashSet<>();
         this.ratings = new HashSet<>();
         this.orders = new HashSet<>();
+        this.shopRatings = new HashSet<>();
     }
 
     public User(UserType type) {
@@ -113,39 +117,4 @@ public class User {
     public void setDiscount(float discount) {
         this.discount = discount;
     }
-
-    //    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return Collections.singleton(() -> "ROLE_" + type.name());
-//    }
-//
-//    @Override
-//    public String getPassword() {
-//        return null;
-//    }
-//
-//    @Override
-//    public String getUsername() {
-//        return null;
-//    }
-//
-//    @Override
-//    public boolean isAccountNonExpired() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isAccountNonLocked() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isCredentialsNonExpired() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isEnabled() {
-//        return true;
-//    }
 }

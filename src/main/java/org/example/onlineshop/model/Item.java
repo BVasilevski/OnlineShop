@@ -1,9 +1,13 @@
 package org.example.onlineshop.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.example.onlineshop.model.enumerations.Category;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +33,11 @@ public class Item {
 
     private float avgRating;
 
+    private LocalDate dateCreated;
+
+    @Column(nullable = true)
+    private int quantity;
+
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ItemInCart> cartItems;
 
@@ -38,17 +47,35 @@ public class Item {
     @ManyToMany(mappedBy = "items")
     private List<Order> orders;
 
-    public Item(String imageUrl, float price, String name, Category category) {
+    public Item(String imageUrl, float price, String name, Category category, LocalDate date, int quantity) {
         this.imageUrl = imageUrl;
         this.price = price;
         this.name = name;
         this.category = category;
+        this.dateCreated = date;
+        this.quantity = quantity;
         this.cartItems = new HashSet<>();
         this.ratings = new HashSet<>();
     }
 
     public Item() {
 
+    }
+
+    public LocalDate getDateCreated() {
+        return dateCreated;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public Long getId() {

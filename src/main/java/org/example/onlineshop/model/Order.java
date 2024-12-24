@@ -2,9 +2,7 @@ package org.example.onlineshop.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,7 +17,7 @@ public class Order {
 
     private boolean delivered;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

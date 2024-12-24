@@ -117,7 +117,7 @@
                 credentials: "same-origin"  // Ensures cookies (session) are included in the request
             });
 
-            window.location.href = "/orders";
+            window.location.href = "/items/recommendations";
             return;
         }
 
@@ -138,7 +138,7 @@
             if (paymentIntent.status === 'succeeded') {
                 alert('Payment succeeded!');
                 console.log('Redirecting to /orders');
-                window.location.href = "/orders";
+                window.location.href = "/items/recommendations";
             } else {
                 console.log('Payment failed with status:', paymentIntent.status);
             }

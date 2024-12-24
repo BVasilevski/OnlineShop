@@ -4,14 +4,12 @@ import jakarta.servlet.http.HttpSession;
 import org.example.onlineshop.model.*;
 import org.example.onlineshop.model.enumerations.Category;
 import org.example.onlineshop.model.enumerations.UserType;
-import org.example.onlineshop.service.ItemInCartService;
-import org.example.onlineshop.service.ItemRatingService;
-import org.example.onlineshop.service.ItemService;
-import org.example.onlineshop.service.UserService;
+import org.example.onlineshop.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -21,14 +19,16 @@ import java.util.Random;
 public class ItemController {
     private final ItemService itemService;
     private final ItemInCartService itemInCartService;
-    private final UserService userService;
+    private final RecommendationService recommendationService;
     private final ItemRatingService itemRatingService;
+    private final OrderService orderService;
 
-    public ItemController(ItemService itemService, ItemInCartService itemInCartService, UserService userService, ItemRatingService itemRatingService) {
+    public ItemController(ItemService itemService, ItemInCartService itemInCartService, RecommendationService recommendationService, ItemRatingService itemRatingService, OrderService orderService) {
         this.itemService = itemService;
         this.itemInCartService = itemInCartService;
-        this.userService = userService;
+        this.recommendationService = recommendationService;
         this.itemRatingService = itemRatingService;
+        this.orderService = orderService;
     }
 
     @GetMapping({"", "/"})
@@ -50,9 +50,11 @@ public class ItemController {
     public String saveItem(@RequestParam("name") String name,
                            @RequestParam("imageUrl") String imageUrl,
                            @RequestParam("price") float price,
-                           @RequestParam("category") String category) {
+                           @RequestParam("category") String category,
+                           @RequestParam("quantity") int quantity) {
 
-        Item item = new Item(imageUrl, price, name, Category.valueOf(category));
+        LocalDate date = LocalDate.now();
+        Item item = new Item(imageUrl, price, name, Category.valueOf(category), date, quantity);
         itemService.save(item);
 
         return "redirect:/items";
@@ -195,18 +197,20 @@ public class ItemController {
                              @RequestParam String name,
                              @RequestParam String imageUrl,
                              @RequestParam Float price,
-                             @RequestParam Category category) {
-        this.itemService.update(itemId, name, imageUrl, price, category);
+                             @RequestParam Category category,
+                             @RequestParam Integer quantity) {
+        LocalDate date = LocalDate.now();
+        this.itemService.update(itemId, name, imageUrl, price, category, date, quantity);
         return "redirect:/items";
     }
 
     @GetMapping("/reviews/{id}")
     public String getItemReviews(@PathVariable Long id, Model model) {
-        Item item = itemService.findById(id); // Fetch the item
+        Item item = itemService.findById(id);
         List<ItemRating> reviews = itemRatingService.findReviewsForItem(item);
         model.addAttribute("item", item);
         model.addAttribute("reviews", reviews);
-        return "item-reviews"; // Thymeleaf template for reviews
+        return "item-reviews";
     }
 
     @PostMapping("/delete")
@@ -215,5 +219,27 @@ public class ItemController {
         return "redirect:/items";
     }
 
+    @GetMapping("/new_items")
+    public String getNewItems(Model model) {
+        List<Item> items = itemService.getNewItems();
+        model.addAttribute("items", items);
+        return "catalogue";
+    }
+
+    @GetMapping("/recommendations")
+    public String recommendItems(Model model,
+                                 HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        List<Item> recommendedItems;
+        try {
+            Order order = this.orderService.findLastOrder(user);
+            recommendedItems = this.recommendationService.recommendItems(order.getId());
+        } catch (RuntimeException e) {
+            recommendedItems = this.recommendationService.recommendItems(null);
+        }
+        model.addAttribute("items", recommendedItems);
+        model.addAttribute("categories", Category.values());
+        return "recommendations";
+    }
 }
 

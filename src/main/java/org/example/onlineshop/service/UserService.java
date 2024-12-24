@@ -70,4 +70,10 @@ public class UserService {
         }
         userRepository.save(user);
     }
+
+    public void removeUserWithUsername(String username) {
+        User user = this.userRepository.findByUsername(username).orElseThrow(
+                () -> new RuntimeException(String.format("User with username %s is not found", username)));
+        this.userRepository.delete(user);
+    }
 }
