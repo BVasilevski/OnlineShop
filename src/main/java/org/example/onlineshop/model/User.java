@@ -115,6 +115,6 @@ public class User {
     }
 
     public void setDiscount(float discount) {
-        this.discount = this.discount + discount;
+        this.discount = discount;
     }
 }

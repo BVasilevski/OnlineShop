@@ -63,11 +63,17 @@ public class UserService {
             user.setDiscount(0.02f);
             return;
         }
-        user.setDiscount(user.getDiscount() + (user.getDiscount() * 0.02f));
+        float userDiscount = user.getDiscount();
+        float increment = 0.02f;
+        float newUserDiscount = userDiscount + increment;
+        user.setDiscount(newUserDiscount);
+
         List<Order> ordersFromUser = orderRepository.getOrdersByUser(user);
         // napravil 5, 10, 15 itn naracka
         if (ordersFromUser.size() % 5 == 0) {
-            user.setDiscount(user.getDiscount() + (user.getDiscount() * 0.05f));
+            increment = 0.05f;
+            newUserDiscount = user.getDiscount() + increment;
+            user.setDiscount(newUserDiscount);
         }
 
         if (user.getDiscount() > 0.5) {
