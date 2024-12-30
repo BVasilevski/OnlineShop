@@ -10,7 +10,12 @@
 <body>
 <div th:replace="navigation.html"></div>
 <div th:if="${#lists.isEmpty(orders)}">
-    <p style="text-align: center; color: #777; margin-top: 10px; font-size: xxx-large">You have no orders.</p>
+    <div th:if="${session.user?.getType()?.name().equals('USER')}">
+        <p style="text-align: center; color: #777; margin-top: 10px; font-size: xxx-large">You have no orders.</p>
+    </div>
+    <div th:if="${session.user?.getType()?.name().equals('ADMIN') || session.user?.getType()?.name().equals('DELIVERER')}">
+        <p style="text-align: center; color: #777; margin-top: 10px; font-size: xxx-large">There are no orders.</p>
+    </div>
 </div>
 <div th:unless="${#lists.isEmpty(orders)}">
     <div class="container mt-5">

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 @Controller
-@RequestMapping("/items")
+@RequestMapping({"/", "/items"})
 public class ItemController {
     private final ItemService itemService;
     private final ItemInCartService itemInCartService;

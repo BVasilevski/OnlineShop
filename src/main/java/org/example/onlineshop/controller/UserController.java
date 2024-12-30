@@ -77,6 +77,7 @@ public class UserController {
                                Model model) {
         try {
             User user = this.userService.registerUser(name, lastName, username, password, street, houseNumber);
+            session.setAttribute("user", user);
             if (session.getAttribute("itemInCarts") != null) {
                 List<ItemInCart> itemInCarts = (List<ItemInCart>) session.getAttribute("itemInCarts");
                 this.itemInCartService.addItemsToUserCart(user, itemInCarts);
