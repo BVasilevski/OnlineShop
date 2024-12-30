@@ -126,8 +126,11 @@
             <span th:text="${totalPrice - (totalPrice * (session.user.getDiscount()))}">0</span>
         </p>
     </div>
-    <div style="display: flex; justify-content: center; margin-top: 20px;">
+    <div th:if="${!temporary_user}" style="display: flex; justify-content: center; margin-top: 20px;">
         <button onclick="location.href='/items/checkout'">Proceed to Checkout</button>
+    </div>
+    <div th:if="${temporary_user}" style="display: flex; justify-content: center; margin-top: 20px;">
+        <button onclick="location.href='/login'">Login to proceed to payment</button>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -10,50 +10,56 @@
 </head>
 <body>
 <div th:replace="navigation.html"></div>
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Create New Item</h1>
-
-    <!-- Item Creation Form -->
-    <form th:action="@{/items/save}" method="post">
-        <div class="mb-3">
-            <label for="name" class="form-label">Name:</label>
-            <input type="text" name="name" id="name" class="form-control" required/>
-        </div>
-
-        <div class="mb-3">
-            <label for="imageUrl" class="form-label">Image URL:</label>
-            <input type="text" name="imageUrl" id="imageUrl" class="form-control" required/>
-        </div>
-
-        <div class="mb-3">
-            <label for="price" class="form-label">Price:</label>
-            <input type="number" step="0.01" name="price" id="price" class="form-control" required/>
-        </div>
-
-        <!-- Category Dropdown populated from controller -->
-        <div class="mb-3">
-            <label for="category" class="form-label">Category:</label>
-            <select name="category" id="category" class="form-control" required>
-                <option value="" th:text="'-- Select Category --'" disabled selected></option>
-                <!-- Iterate over categories sent from controller -->
-                <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="quantity" class="form-label">Quantity:</label>
-            <input type="number" name="quantity" id="quantity" class="form-control" required/>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Create Item</button>
-    </form>
-
-    <br>
-
-    <!-- Back to Item List Link -->
-    <a th:href="@{/items}" class="btn btn-secondary mt-3">Back to List</a>
+<div th:if="${session.user == null || (session.user != null && !session.user.getType().name().equals('ADMIN'))}">
+    <div style="text-align: center">
+        <h1 style="margin-top: 5%">401 Unauthorized</h1>
+    </div>
 </div>
+<div th:if="${session.user != null && session.user.getType().name().equals('ADMIN')}">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Create New Item</h1>
 
+        <!-- Item Creation Form -->
+        <form th:action="@{/items/save}" method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label>
+                <input type="text" name="name" id="name" class="form-control" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="imageUrl" class="form-label">Image URL:</label>
+                <input type="text" name="imageUrl" id="imageUrl" class="form-control" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Price:</label>
+                <input type="number" step="0.01" name="price" id="price" class="form-control" required/>
+            </div>
+
+            <!-- Category Dropdown populated from controller -->
+            <div class="mb-3">
+                <label for="category" class="form-label">Category:</label>
+                <select name="category" id="category" class="form-control" required>
+                    <option value="" th:text="'-- Select Category --'" disabled selected></option>
+                    <!-- Iterate over categories sent from controller -->
+                    <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity:</label>
+                <input type="number" name="quantity" id="quantity" class="form-control" required/>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Item</button>
+        </form>
+
+        <br>
+
+        <!-- Back to Item List Link -->
+        <a th:href="@{/items}" class="btn btn-secondary mt-3">Back to List</a>
+    </div>
+</div>
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

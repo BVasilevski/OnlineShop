@@ -1,6 +1,7 @@
 package org.example.onlineshop.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.example.onlineshop.model.ItemInCart;
 import org.example.onlineshop.model.ShopRating;
 import org.example.onlineshop.model.User;
 import org.example.onlineshop.service.ItemInCartService;
@@ -41,6 +42,12 @@ public class UserController {
         if (userService.findByUsernameAndPassword(username, password) != null) {
             user = userService.findByUsernameAndPassword(username, password);
             session.setAttribute("user", user);
+            if (session.getAttribute("itemInCarts") != null) {
+                List<ItemInCart> itemInCarts = (List<ItemInCart>) session.getAttribute("itemInCarts");
+                itemInCartService.addItemsToUserCart(user, itemInCarts);
+                session.removeAttribute("itemInCarts");
+                return "redirect:/items/cart";
+            }
             return "redirect:/items";
         } else {
             model.addAttribute("error", "Incorrect username or password.");
@@ -66,9 +73,16 @@ public class UserController {
                                @RequestParam String password,
                                @RequestParam String street,
                                @RequestParam String houseNumber,
+                               HttpSession session,
                                Model model) {
         try {
-            this.userService.registerUser(name, lastName, username, password, street, houseNumber);
+            User user = this.userService.registerUser(name, lastName, username, password, street, houseNumber);
+            if (session.getAttribute("itemInCarts") != null) {
+                List<ItemInCart> itemInCarts = (List<ItemInCart>) session.getAttribute("itemInCarts");
+                this.itemInCartService.addItemsToUserCart(user, itemInCarts);
+                session.removeAttribute("itemInCarts");
+                return "redirect:/items/cart";
+            }
         } catch (RuntimeException e) {
             model.addAttribute("error", "Username already exists.");
             return "register";

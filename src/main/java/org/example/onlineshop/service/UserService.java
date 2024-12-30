@@ -33,12 +33,13 @@ public class UserService {
         return this.userRepository.findByUsername(username).orElseThrow(RuntimeException::new);
     }
 
-    public void registerUser(String name, String lastName, String username, String password, String street, String houseNumber) {
+    public User registerUser(String name, String lastName, String username, String password, String street, String houseNumber) {
         if (this.userRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("User with username already exists.");
         }
         User user = new User(name, lastName, username, password, street, houseNumber);
         this.userRepository.save(user);
+        return user;
     }
 
     public List<User> findAll() {

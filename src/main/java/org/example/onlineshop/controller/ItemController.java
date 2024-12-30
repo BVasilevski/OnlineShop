@@ -80,12 +80,14 @@ public class ItemController {
             }
             model.addAttribute("itemsInCart", itemInCarts);
             model.addAttribute("totalPrice", totalPrice);
+            model.addAttribute("temporary_user", true);
         } else {
             List<ItemInCart> items = itemInCartService.getAll();
             items = items.stream().filter(item -> item.getUser().getUsername().equals(user.getUsername())).toList();
             float totalPrice = (float) items.stream().mapToDouble(item -> item.getQuantity() * item.getItem().getPrice()).sum();
             model.addAttribute("totalPrice", totalPrice);
             model.addAttribute("itemsInCart", items);
+            model.addAttribute("temporary_user", false);
         }
         return "cart";
     }
@@ -108,7 +110,16 @@ public class ItemController {
             }
             ItemInCart itemInCart = new ItemInCart(random.nextLong(), user, itemService.findById(itemId), 1);
             itemInCarts = (List<ItemInCart>) session.getAttribute("itemInCarts");
-            itemInCarts.add(itemInCart);
+            boolean exists = false;
+            for (var item : itemInCarts) {
+                if (item.getItem().getId().equals(itemInCart.getItem().getId())) {
+                    item.setQuantity(item.getQuantity() + 1);
+                    exists = true;
+                }
+            }
+            if (!exists) {
+                itemInCarts.add(itemInCart);
+            }
             session.setAttribute("itemInCarts", itemInCarts);
         } else {
             itemService.addToUserCart(itemId, user, 1);

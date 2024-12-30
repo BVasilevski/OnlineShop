@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,62 +10,68 @@
 </head>
 <body>
 <div th:replace="navigation.html"></div>
-<div class="container mt-5">
-    <h1 class="text-center mb-4" th:text="${item != null} ? 'Edit Item' : 'Create New Item'">Edit Item</h1>
-
-    <!-- Item Form -->
-    <form th:action="@{/items/update}" method="post">
-        <!-- Hidden field for the item's ID (only for editing) -->
-        <input type="hidden" name="itemId" th:value="${item != null} ? ${item.id} : ''"/>
-
-        <div class="mb-3">
-            <label for="name" class="form-label">Name:</label>
-            <input type="text" name="name" id="name" class="form-control"
-                   th:value="${item != null} ? ${item.name} : ''" required/>
-        </div>
-
-        <div class="mb-3">
-            <label for="imageUrl" class="form-label">Image URL:</label>
-            <input type="text" name="imageUrl" id="imageUrl" class="form-control"
-                   th:value="${item != null} ? ${item.imageUrl} : ''" required/>
-        </div>
-
-        <div class="mb-3">
-            <label for="price" class="form-label">Price:</label>
-            <input type="number" step="0.01" name="price" id="price" class="form-control"
-                   th:value="${item != null} ? ${item.price} : ''" required/>
-        </div>
-
-        <!-- Category Dropdown -->
-        <div class="mb-3">
-            <label for="category" class="form-label">Category:</label>
-            <select name="category" id="category" class="form-control" required>
-                <option value="" disabled th:text="'-- Select Category --'"></option>
-                <option th:each="category : ${categories}"
-                        th:value="${category}"
-                        th:text="${category}"
-                        th:selected="${item != null && category == item.category}">
-                </option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="quantity" class="form-label">Quantity:</label>
-            <input type="number" name="quantity" id="quantity" class="form-control"
-                   th:value="${item != null} ? ${item.quantity} : ''" required/>
-        </div>
-
-        <button type="submit" class="btn btn-primary" th:text="${item != null} ? 'Update Item' : 'Create Item'">
-            Update Item
-        </button>
-    </form>
-
-    <br>
-
-    <!-- Back to Item List Link -->
-    <a th:href="@{/items}" class="btn btn-secondary mt-3">Back to List</a>
+<div th:if="${session.user == null || (session.user != null && !session.user.getType().name().equals('ADMIN'))}">
+    <div style="text-align: center">
+        <h1 style="margin-top: 5%">401 Unauthorized</h1>
+    </div>
 </div>
+<div th:if="${session.user != null && session.user?.getType()?.name().equals('ADMIN')}">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4" th:text="${item != null} ? 'Edit Item' : 'Create New Item'">Edit Item</h1>
 
+        <!-- Item Form -->
+        <form th:action="@{/items/update}" method="post">
+            <!-- Hidden field for the item's ID (only for editing) -->
+            <input type="hidden" name="itemId" th:value="${item != null} ? ${item.id} : ''"/>
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label>
+                <input type="text" name="name" id="name" class="form-control"
+                       th:value="${item != null} ? ${item.name} : ''" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="imageUrl" class="form-label">Image URL:</label>
+                <input type="text" name="imageUrl" id="imageUrl" class="form-control"
+                       th:value="${item != null} ? ${item.imageUrl} : ''" required/>
+            </div>
+
+            <div class="mb-3">
+                <label for="price" class="form-label">Price:</label>
+                <input type="number" step="0.01" name="price" id="price" class="form-control"
+                       th:value="${item != null} ? ${item.price} : ''" required/>
+            </div>
+
+            <!-- Category Dropdown -->
+            <div class="mb-3">
+                <label for="category" class="form-label">Category:</label>
+                <select name="category" id="category" class="form-control" required>
+                    <option value="" disabled th:text="'-- Select Category --'"></option>
+                    <option th:each="category : ${categories}"
+                            th:value="${category}"
+                            th:text="${category}"
+                            th:selected="${item != null && category == item.category}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity:</label>
+                <input type="number" name="quantity" id="quantity" class="form-control"
+                       th:value="${item != null} ? ${item.quantity} : ''" required/>
+            </div>
+
+            <button type="submit" class="btn btn-primary" th:text="${item != null} ? 'Update Item' : 'Create Item'">
+                Update Item
+            </button>
+        </form>
+
+        <br>
+
+        <!-- Back to Item List Link -->
+        <a th:href="@{/items}" class="btn btn-secondary mt-3">Back to List</a>
+    </div>
+</div>
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
