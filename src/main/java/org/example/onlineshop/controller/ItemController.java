@@ -81,6 +81,7 @@ public class ItemController {
             model.addAttribute("itemsInCart", itemInCarts);
             model.addAttribute("totalPrice", totalPrice);
             model.addAttribute("temporary_user", true);
+            model.addAttribute("userDiscount", 0);
         } else {
             List<ItemInCart> items = itemInCartService.getAll();
             items = items.stream().filter(item -> item.getUser().getUsername().equals(user.getUsername())).toList();
@@ -88,6 +89,7 @@ public class ItemController {
             model.addAttribute("totalPrice", totalPrice);
             model.addAttribute("itemsInCart", items);
             model.addAttribute("temporary_user", false);
+            model.addAttribute("userDiscount", user.getDiscount());
         }
         return "cart";
     }

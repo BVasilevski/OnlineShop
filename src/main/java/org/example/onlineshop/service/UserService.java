@@ -59,11 +59,15 @@ public class UserService {
 
     public void incrementUserDiscount(User user) {
         // increment by 2%
-        user.setDiscount((float) (user.getDiscount() + 0.02));
+        if (user.getDiscount() == 0) {
+            user.setDiscount(0.02f);
+            return;
+        }
+        user.setDiscount(user.getDiscount() + (user.getDiscount() * 0.02f));
         List<Order> ordersFromUser = orderRepository.getOrdersByUser(user);
         // napravil 5, 10, 15 itn naracka
         if (ordersFromUser.size() % 5 == 0) {
-            user.setDiscount((float) (user.getDiscount() + 0.05));
+            user.setDiscount(user.getDiscount() + (user.getDiscount() * 0.05f));
         }
 
         if (user.getDiscount() > 0.5) {

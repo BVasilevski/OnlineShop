@@ -120,7 +120,7 @@
             <span th:text="${totalPrice}">0</span>
         </p>
         <p>Discount:
-            <span th:text="${#numbers.formatDecimal(session.user.getDiscount() * 100, 1, 2)} + '%'">0</span>
+            <span th:text="${#numbers.formatDecimal(userDiscount * 100, 1, 2)} + '%'">0</span>
         </p>
         <p>Price to pay:
             <span th:text="${totalPrice - (totalPrice * (session.user.getDiscount()))}">0</span>
