@@ -49,7 +49,7 @@
                         </div>
                         <div style="text-align: center">
                             <form method="post"
-                                  th:if="${session.user != null && order.getUser().username.equals(session.user.username)}"
+                                  th:if="${session.user != null && order.getUser().username.equals(session.user.username) && order.isDelivered() != true}"
                                   th:action="@{/orders/cancel}">
                                 <input type="hidden" th:value="${order.getId()}" name="orderId">
                                 <button type="submit" class="btn btn-danger">Cancel Order</button>

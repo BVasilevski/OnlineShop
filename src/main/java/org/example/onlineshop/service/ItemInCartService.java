@@ -35,6 +35,7 @@ public class ItemInCartService {
         this.itemInCartRepository.deleteById(itemId);
     }
 
+    @Transactional
     public void removeItemsFromCart(User user) {
         List<ItemInCart> items = itemInCartRepository.findAllByUser(user);
         itemInCartRepository.deleteAll(items);

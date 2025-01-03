@@ -155,7 +155,7 @@ public class ItemController {
         User user = (User) session.getAttribute("user");
         List<ItemInCart> items = itemInCartService.getAll();
         List<Item> orderedItems = items.stream().filter(item -> item.getUser().getUsername().equals(user.getUsername())).map(ItemInCart::getItem).toList();
-        double totalPrice = items.stream().mapToDouble(item -> item.getItem().getPrice() * item.getQuantity()).sum();
+        double totalPrice = items.stream().filter(item -> item.getUser().getId().equals(user.getId())).mapToDouble(item -> item.getItem().getPrice() * item.getQuantity()).sum();
         float amount = (float) (totalPrice - (totalPrice * user.getDiscount()));
         Order order = new Order(amount, user, orderedItems);
         session.setAttribute("order", order);
