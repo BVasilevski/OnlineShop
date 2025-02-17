@@ -1,25 +1,49 @@
 package org.example.onlineshop.service;
 
 import jakarta.transaction.Transactional;
+import org.example.onlineshop.model.Item;
 import org.example.onlineshop.model.ItemInCart;
 import org.example.onlineshop.model.User;
+import org.example.onlineshop.model.dto.ItemInCartDTO;
 import org.example.onlineshop.repository.ItemInCartRepository;
+import org.example.onlineshop.repository.ItemRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemInCartService {
     private final ItemInCartRepository itemInCartRepository;
+    private final UserService userService;
 
-    public ItemInCartService(ItemInCartRepository itemInCartRepository) {
+    private final ItemRepository itemRepository;
+
+    public ItemInCartService(ItemInCartRepository itemInCartRepository, UserService userService, ItemRepository itemRepository) {
         this.itemInCartRepository = itemInCartRepository;
+        this.userService = userService;
+        this.itemRepository = itemRepository;
     }
 
     public List<ItemInCart> getAllItemsInUserCart(User user) {
         return itemInCartRepository.findAllByUser(user);
     }
+
+    public List<ItemInCartDTO> getAllItemsInUserCartDTO(Long userId) {
+        User user = userService.findById(userId);
+        return itemInCartRepository.findAllByUser(user)
+                .stream()
+                .map(itemInCart -> new ItemInCartDTO(
+                        itemInCart.getId(),
+                        itemInCart.getItem().getName(),
+                        itemInCart.getItem().getImageUrl(),
+                        itemInCart.getItem().getPrice(),
+                        itemInCart.getQuantity()
+                ))
+                .collect(Collectors.toList());
+    }
+
 
     public List<ItemInCart> getAll() {
         Sort sort = Sort.by("quantity").descending();
@@ -31,8 +55,10 @@ public class ItemInCartService {
         itemInCartRepository.save(itemInCart);
     }
 
-    public void removeFromUserCart(User user, Long itemId) {
-        this.itemInCartRepository.deleteById(itemId);
+    @Transactional
+    public void removeFromUserCart(Long itemId) {
+        ItemInCart item = this.itemInCartRepository.findById(itemId).orElseThrow(() -> new RuntimeException(String.format("Item with id %d doesn't exist", itemId)));
+        this.itemInCartRepository.delete(item);
     }
 
     @Transactional
@@ -69,5 +95,12 @@ public class ItemInCartService {
             }
         }
         itemInCartRepository.saveAll(itemsInUserCart);
+    }
+
+    public void addItemToUserCart(Long userId, Long itemId, Integer quantity) {
+        User user = userService.findById(userId);
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new RuntimeException(String.format("Item with id %d doesn't exist", itemId)));
+        ItemInCart itemInCart = new ItemInCart(user, item, quantity);
+        itemInCartRepository.save(itemInCart);
     }
 }

@@ -1,0 +1,61 @@
+package org.example.onlineshop.controller.api;
+
+import org.example.onlineshop.model.Item;
+import org.example.onlineshop.model.ItemRating;
+import org.example.onlineshop.model.User;
+import org.example.onlineshop.model.dto.ItemDTO;
+import org.example.onlineshop.service.ItemRatingService;
+import org.example.onlineshop.service.ItemService;
+import org.example.onlineshop.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/items")
+public class ItemAPIController {
+    private final ItemService itemService;
+    private final UserService userService;
+    private final ItemRatingService itemRatingService;
+
+    public ItemAPIController(ItemService itemService, UserService userService, ItemRatingService itemRatingService) {
+        this.itemService = itemService;
+        this.userService = userService;
+        this.itemRatingService = itemRatingService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Item>> getItems(@RequestParam(name = "category", required = false) String category) {
+        List<Item> items = (category == null) ? itemService.findAll() : itemService.findByCategory(category);
+        return ResponseEntity.ok(items);
+    }
+
+    @GetMapping("{itemId}")
+    public ResponseEntity<?> getDetailsForItem(@PathVariable Long itemId) {
+        try {
+            Item item = this.itemService.findById(itemId);
+            ItemDTO itemDTO = new ItemDTO(item.getName(), item.getPrice(), item.getImageUrl());
+            return ResponseEntity.ok(itemDTO);
+        } catch (RuntimeException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+        }
+    }
+
+    @PostMapping("/rate/{itemId}")
+    public ResponseEntity<?> addReviewForItem(@PathVariable Long itemId,
+                                              @RequestParam Long userId,
+                                              @RequestParam float rating,
+                                              @RequestParam String comment) {
+        try {
+            Item item = this.itemService.findById(itemId);
+            User user = this.userService.findById(userId);
+            ItemRating itemRating = new ItemRating(item, user, rating, comment);
+            this.itemRatingService.save(itemRating);
+            return ResponseEntity.ok("Item rating added successfully");
+        } catch (RuntimeException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+        }
+    }
+}

@@ -67,7 +67,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestParam String name,
+    public String registerUser(@RequestParam String email,
+                               @RequestParam String name,
                                @RequestParam String lastName,
                                @RequestParam String username,
                                @RequestParam String password,
@@ -76,7 +77,7 @@ public class UserController {
                                HttpSession session,
                                Model model) {
         try {
-            User user = this.userService.registerUser(name, lastName, username, password, street, houseNumber);
+            User user = this.userService.registerUser(email, name, lastName, username, password, street, houseNumber);
             session.setAttribute("user", user);
             if (session.getAttribute("itemInCarts") != null) {
                 List<ItemInCart> itemInCarts = (List<ItemInCart>) session.getAttribute("itemInCarts");

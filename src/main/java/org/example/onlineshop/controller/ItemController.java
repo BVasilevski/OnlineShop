@@ -192,7 +192,7 @@ public class ItemController {
             }
             session.setAttribute("itemInCarts", itemInCarts);
         } else {
-            this.itemInCartService.removeFromUserCart(user, itemId);
+            this.itemInCartService.removeFromUserCart(itemId);
         }
         return "redirect:/items/cart";
     }

@@ -135,4 +135,8 @@ public class ItemService {
         LocalDate after = LocalDate.now().minusDays(7);
         return this.itemRepository.findAllByDateCreatedAfter(after);
     }
+
+    public List<Item> findByCategory(String category) {
+        return itemRepository.findByCategory(Category.valueOf(category));
+    }
 }

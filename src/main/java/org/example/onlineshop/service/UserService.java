@@ -33,11 +33,11 @@ public class UserService {
         return this.userRepository.findByUsername(username).orElseThrow(RuntimeException::new);
     }
 
-    public User registerUser(String name, String lastName, String username, String password, String street, String houseNumber) {
+    public User registerUser(String email, String name, String lastName, String username, String password, String street, String houseNumber) {
         if (this.userRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("User with username already exists.");
         }
-        User user = new User(name, lastName, username, password, street, houseNumber);
+        User user = new User(email, name, lastName, username, password, street, houseNumber);
         this.userRepository.save(user);
         return user;
     }
@@ -86,5 +86,21 @@ public class UserService {
         User user = this.userRepository.findByUsername(username).orElseThrow(
                 () -> new RuntimeException(String.format("User with username %s is not found", username)));
         this.userRepository.delete(user);
+    }
+
+    public User findById(Long userId) {
+        return this.userRepository.findById(userId).orElseThrow(() -> new RuntimeException(String.format("User with id: %d doesn't exist", userId)));
+    }
+
+    public void updateUser(Long userId, String name, String lastName, String email) {
+        User user = this.userRepository.findById(userId).orElseThrow(() -> new RuntimeException(String.format("User with id %d doesn't exist", userId)));
+        user.setName(name);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        this.userRepository.save(user);
+    }
+
+    public boolean findByEmailAndPassword(String email, String password) {
+        return this.userRepository.findByEmailAndPassword(email, password).isPresent();
     }
 }

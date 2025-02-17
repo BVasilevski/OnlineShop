@@ -15,6 +15,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String email;
+
     private String name;
 
     private String lastName;
@@ -32,7 +34,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType type;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<ItemInCart> cartItems;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -44,7 +46,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ShopRating> shopRatings;
 
-    public User(String name, String lastName, String username, String password, String streetNumber, String houseNumber) {
+    public User(String email, String name, String lastName, String username, String password, String streetNumber, String houseNumber) {
+        this.email = email;
         this.name = name;
         this.lastName = lastName;
         this.username = username;
@@ -64,10 +67,22 @@ public class User {
     }
 
     public User() {
+
+    }
+
+    public User(String email, String name, String lastName, String password) {
+        this.email = email;
+        this.name = name;
+        this.lastName = lastName;
+        this.password = password;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getName() {
@@ -114,7 +129,63 @@ public class User {
         return orders;
     }
 
+    public Set<ShopRating> getShopRatings() {
+        return shopRatings;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setStreetNumber(String streetNumber) {
+        this.streetNumber = streetNumber;
+    }
+
+    public void setHouseNumber(String houseNumber) {
+        this.houseNumber = houseNumber;
+    }
+
     public void setDiscount(float discount) {
         this.discount = discount;
+    }
+
+    public void setType(UserType type) {
+        this.type = type;
+    }
+
+    public void setCartItems(Set<ItemInCart> cartItems) {
+        this.cartItems = cartItems;
+    }
+
+    public void setRatings(Set<ItemRating> ratings) {
+        this.ratings = ratings;
+    }
+
+    public void setOrders(Set<Order> orders) {
+        this.orders = orders;
+    }
+
+    public void setShopRatings(Set<ShopRating> shopRatings) {
+        this.shopRatings = shopRatings;
     }
 }
