@@ -38,7 +38,7 @@ public class Item {
     @Column(nullable = true)
     private int quantity;
 
-    @OneToMany(mappedBy = "item", fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ItemInCart> cartItems;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)

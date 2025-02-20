@@ -2,11 +2,13 @@ package org.example.onlineshop.service;
 
 import org.example.onlineshop.model.Order;
 import org.example.onlineshop.model.User;
+import org.example.onlineshop.model.dto.UserDTO;
 import org.example.onlineshop.repository.OrderRepository;
 import org.example.onlineshop.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -102,5 +104,10 @@ public class UserService {
 
     public boolean findByEmailAndPassword(String email, String password) {
         return this.userRepository.findByEmailAndPassword(email, password).isPresent();
+    }
+
+    public List<UserDTO> findAllDTO() {
+        List<User> allUsers = findAll();
+        return allUsers.stream().map(user -> new UserDTO(user.getId(), user.getName(), user.getLastName(), user.getEmail())).collect(Collectors.toList());
     }
 }
