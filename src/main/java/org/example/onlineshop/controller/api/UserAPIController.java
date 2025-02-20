@@ -1,6 +1,7 @@
 package org.example.onlineshop.controller.api;
 
 import org.example.onlineshop.model.User;
+import org.example.onlineshop.model.dto.UserDTO;
 import org.example.onlineshop.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class UserAPIController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = this.userService.findAll();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = this.userService.findAllDTO();
         return ResponseEntity.ok(users);
     }
 

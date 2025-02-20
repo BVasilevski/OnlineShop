@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/items")
@@ -27,8 +28,9 @@ public class ItemAPIController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Item>> getItems(@RequestParam(name = "category", required = false) String category) {
-        List<Item> items = (category == null) ? itemService.findAll() : itemService.findByCategory(category);
+    public ResponseEntity<List<ItemDTO>> getItems(@RequestParam(name = "category", required = false) String category) {
+        List<Item> allItems = (category == null) ? itemService.findAll() : itemService.findByCategory(category);
+        List<ItemDTO> items = allItems.stream().map(item -> new ItemDTO(item.getName(), item.getPrice(), item.getImageUrl())).collect(Collectors.toList());
         return ResponseEntity.ok(items);
     }
 

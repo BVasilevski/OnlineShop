@@ -4,6 +4,7 @@ import org.example.onlineshop.model.Item;
 import org.example.onlineshop.model.ItemInCart;
 import org.example.onlineshop.model.Order;
 import org.example.onlineshop.model.User;
+import org.example.onlineshop.model.dto.OrderDTO;
 import org.example.onlineshop.service.ItemInCartService;
 import org.example.onlineshop.service.OrderService;
 import org.example.onlineshop.service.UserService;
@@ -30,7 +31,7 @@ public class OrderAPIController {
     public ResponseEntity<?> getAllOrdersFromUser(@RequestParam Long userId) {
         try {
             User user = this.userService.findById(userId);
-            List<Order> ordersFromUser = this.orderService.getOrdersFromUser(user);
+            List<OrderDTO> ordersFromUser = this.orderService.getOrdersFromUserDTO(user);
             return ResponseEntity.ok(ordersFromUser);
         } catch (RuntimeException exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());

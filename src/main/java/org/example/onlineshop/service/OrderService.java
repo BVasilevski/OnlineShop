@@ -2,11 +2,14 @@ package org.example.onlineshop.service;
 
 import org.example.onlineshop.model.Order;
 import org.example.onlineshop.model.User;
+import org.example.onlineshop.model.dto.ItemDTO;
+import org.example.onlineshop.model.dto.OrderDTO;
 import org.example.onlineshop.repository.OrderRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -22,6 +25,13 @@ public class OrderService {
 
     public List<Order> getOrdersFromUser(User user) {
         return this.orderRepository.getOrdersByUser(user);
+    }
+
+    public List<OrderDTO> getOrdersFromUserDTO(User user) {
+        List<Order> allOrders = this.orderRepository.getOrdersByUser(user);
+        return allOrders.stream().map(order -> new OrderDTO(order.getId(),
+                order.getItems().stream().map(item -> new ItemDTO(item.getName(), item.getPrice(), item.getImageUrl())).collect(Collectors.toList()),
+                (int) order.getTotalPrice(), order.isDelivered())).toList();
     }
 
     public List<Order> findAll() {
