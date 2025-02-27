@@ -1,14 +1,24 @@
 package org.example.onlineshop.model.dto;
 
 public class ItemDTO {
+    private Long id;
     private String name;
     private float price;
     private String imageUrl;
 
-    public ItemDTO(String name, float price, String imageUrl) {
+    public ItemDTO(Long id, String name, float price, String imageUrl) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.imageUrl = imageUrl;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

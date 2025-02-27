@@ -5,6 +5,7 @@ import org.example.onlineshop.model.Item;
 import org.example.onlineshop.model.ItemInCart;
 import org.example.onlineshop.model.ItemRating;
 import org.example.onlineshop.model.User;
+import org.example.onlineshop.model.dto.ItemDTO;
 import org.example.onlineshop.model.enumerations.Category;
 import org.example.onlineshop.repository.ItemRatingRepository;
 import org.example.onlineshop.repository.ItemRepository;
@@ -138,5 +139,10 @@ public class ItemService {
 
     public List<Item> findByCategory(String category) {
         return itemRepository.findByCategory(Category.valueOf(category));
+    }
+
+    public ItemDTO findByIdDTO(Long itemId) {
+        Item item = this.findById(itemId);
+        return new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl());
     }
 }

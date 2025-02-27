@@ -30,16 +30,15 @@ public class ItemAPIController {
     @GetMapping
     public ResponseEntity<List<ItemDTO>> getItems(@RequestParam(name = "category", required = false) String category) {
         List<Item> allItems = (category == null) ? itemService.findAll() : itemService.findByCategory(category);
-        List<ItemDTO> items = allItems.stream().map(item -> new ItemDTO(item.getName(), item.getPrice(), item.getImageUrl())).collect(Collectors.toList());
+        List<ItemDTO> items = allItems.stream().map(item -> new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl())).collect(Collectors.toList());
         return ResponseEntity.ok(items);
     }
 
     @GetMapping("{itemId}")
     public ResponseEntity<?> getDetailsForItem(@PathVariable Long itemId) {
         try {
-            Item item = this.itemService.findById(itemId);
-            ItemDTO itemDTO = new ItemDTO(item.getName(), item.getPrice(), item.getImageUrl());
-            return ResponseEntity.ok(itemDTO);
+            ItemDTO item = this.itemService.findByIdDTO(itemId);
+            return ResponseEntity.ok(item);
         } catch (RuntimeException exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
         }
