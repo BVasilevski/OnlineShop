@@ -8,6 +8,7 @@ import org.example.onlineshop.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,9 +26,6 @@ public class UserService {
     }
 
     public User save(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            return userRepository.findByUsername(user.getUsername()).get();
-        }
         return this.userRepository.save(user);
     }
 
@@ -102,8 +100,8 @@ public class UserService {
         this.userRepository.save(user);
     }
 
-    public boolean findByEmailAndPassword(String email, String password) {
-        return this.userRepository.findByEmailAndPassword(email, password).isPresent();
+    public Optional<User> findByEmailAndPassword(String email, String password) {
+        return this.userRepository.findByEmailAndPassword(email, password);
     }
 
     public List<UserDTO> findAllDTO() {

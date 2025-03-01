@@ -1,5 +1,7 @@
 package org.example.onlineshop.service;
 
+import org.example.onlineshop.model.Item;
+import org.example.onlineshop.model.ItemInCart;
 import org.example.onlineshop.model.Order;
 import org.example.onlineshop.model.User;
 import org.example.onlineshop.model.dto.ItemDTO;
@@ -14,9 +16,13 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
+    private final UserService userService;
+    private final ItemInCartService itemInCartService;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, UserService userService, ItemInCartService itemInCartService) {
         this.orderRepository = orderRepository;
+        this.userService = userService;
+        this.itemInCartService = itemInCartService;
     }
 
     public void saveOrder(Order order) {
@@ -53,5 +59,15 @@ public class OrderService {
 
     public void deleteOrder(Long orderId) {
         this.orderRepository.deleteById(orderId);
+    }
+
+    public void createOrder(Long userId) {
+        User user = this.userService.findById(userId);
+        List<ItemInCart> itemInCarts = this.itemInCartService.getAllItemsInUserCart(user);
+        double totalPrice = itemInCarts.stream().mapToDouble(item -> item.getQuantity() * item.getItem().getPrice()).sum();
+        List<Item> items = itemInCarts.stream().map(ItemInCart::getItem).toList();
+        Order order = new Order((float) totalPrice, user, items);
+        this.itemInCartService.removeItemsFromCart(user);
+        this.orderRepository.save(order);
     }
 }

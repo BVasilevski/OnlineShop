@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -50,8 +52,9 @@ public class UserAPIController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestParam String email,
                                        @RequestParam String password) {
-        if (this.userService.findByEmailAndPassword(email, password)) {
-            return ResponseEntity.ok("User found in the database");
+        Optional<User> user = this.userService.findByEmailAndPassword(email, password);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(Map.of("userId", user.get().getId()));
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found in the database");
         }

@@ -1,8 +1,5 @@
 package org.example.onlineshop.controller.api;
 
-import org.example.onlineshop.model.Item;
-import org.example.onlineshop.model.ItemInCart;
-import org.example.onlineshop.model.Order;
 import org.example.onlineshop.model.User;
 import org.example.onlineshop.model.dto.OrderDTO;
 import org.example.onlineshop.service.ItemInCartService;
@@ -41,12 +38,7 @@ public class OrderAPIController {
     @PostMapping("/create")
     public ResponseEntity<?> createUserOrder(@RequestParam Long userId) {
         try {
-            User user = this.userService.findById(userId);
-            List<ItemInCart> itemInCarts = this.itemInCartService.getAllItemsInUserCart(user);
-            double totalPrice = itemInCarts.stream().mapToDouble(item -> item.getQuantity() * item.getItem().getPrice()).sum();
-            List<Item> items = itemInCarts.stream().map(ItemInCart::getItem).toList();
-            Order order = new Order((float) totalPrice, user, items);
-            this.orderService.saveOrder(order);
+            this.orderService.createOrder(userId);
             return ResponseEntity.ok("Order created successfully");
         } catch (RuntimeException exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
