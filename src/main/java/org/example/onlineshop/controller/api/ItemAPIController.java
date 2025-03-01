@@ -4,6 +4,7 @@ import org.example.onlineshop.model.Item;
 import org.example.onlineshop.model.ItemRating;
 import org.example.onlineshop.model.User;
 import org.example.onlineshop.model.dto.ItemDTO;
+import org.example.onlineshop.requests.ItemRequest;
 import org.example.onlineshop.service.ItemRatingService;
 import org.example.onlineshop.service.ItemService;
 import org.example.onlineshop.service.UserService;
@@ -46,13 +47,11 @@ public class ItemAPIController {
 
     @PostMapping("/rate/{itemId}")
     public ResponseEntity<?> addReviewForItem(@PathVariable Long itemId,
-                                              @RequestParam Long userId,
-                                              @RequestParam float rating,
-                                              @RequestParam String comment) {
+                                              @RequestBody ItemRequest request) {
         try {
             Item item = this.itemService.findById(itemId);
-            User user = this.userService.findById(userId);
-            ItemRating itemRating = new ItemRating(item, user, rating, comment);
+            User user = this.userService.findById(request.getUserId());
+            ItemRating itemRating = new ItemRating(item, user, request.getRating(), request.getComment());
             this.itemRatingService.save(itemRating);
             return ResponseEntity.ok("Item rating added successfully");
         } catch (RuntimeException exception) {

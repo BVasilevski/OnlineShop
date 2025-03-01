@@ -1,6 +1,7 @@
 package org.example.onlineshop.controller.api;
 
 import org.example.onlineshop.model.dto.ItemInCartDTO;
+import org.example.onlineshop.requests.AddToCartRequest;
 import org.example.onlineshop.service.ItemInCartService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +29,9 @@ public class CartAPIController {
     }
 
     @PostMapping("/add_to_cart")
-    public ResponseEntity<?> addItemToUserCart(@RequestParam(name = "userId") Long userId,
-                                               @RequestParam(name = "itemId") Long itemId,
-                                               @RequestParam(name = "quantity") Integer quantity) {
+    public ResponseEntity<?> addItemToUserCart(@RequestBody AddToCartRequest request) {
         try {
-            itemInCartService.addItemToUserCart(userId, itemId, quantity);
+            itemInCartService.addItemToUserCart(request.getUserId(), request.getItemId(), request.getQuantity());
             return ResponseEntity.ok("Item added to cart successfully");
         } catch (RuntimeException exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
