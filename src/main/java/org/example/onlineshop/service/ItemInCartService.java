@@ -100,7 +100,13 @@ public class ItemInCartService {
     public void addItemToUserCart(Long userId, Long itemId, Integer quantity) {
         User user = userService.findById(userId);
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new RuntimeException(String.format("Item with id %d doesn't exist", itemId)));
-        ItemInCart itemInCart = new ItemInCart(user, item, quantity);
+        ItemInCart itemInCart;
+        itemInCart = itemInCartRepository.findByUserIdAndItemId(userId, itemId).orElse(null);
+        if (itemInCart != null) {
+            itemInCart.setQuantity(itemInCart.getQuantity() + quantity);
+        } else {
+            itemInCart = new ItemInCart(user, item, quantity);
+        }
         itemInCartRepository.save(itemInCart);
     }
 }

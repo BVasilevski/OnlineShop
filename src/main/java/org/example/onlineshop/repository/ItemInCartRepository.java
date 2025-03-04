@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ItemInCartRepository extends JpaRepository<ItemInCart, Long> {
@@ -15,4 +16,6 @@ public interface ItemInCartRepository extends JpaRepository<ItemInCart, Long> {
     void deleteItemInCartByItemAndUser(Item item, User user);
 
     void deleteItemInCartsByIdIn(List<Long> ids);
+
+    Optional<ItemInCart> findByUserIdAndItemId(Long userId, Long itemId);
 }
