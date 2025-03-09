@@ -7,13 +7,15 @@ public class ItemDTO {
     private String name;
     private float price;
     private String imageUrl;
+    private String description;
     private List<ItemRatingDTO> itemRatings;
 
-    public ItemDTO(Long id, String name, float price, String imageUrl, List<ItemRatingDTO> itemRatings) {
+    public ItemDTO(Long id, String name, float price, String imageUrl, String description, List<ItemRatingDTO> itemRatings) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.imageUrl = imageUrl;
+        this.description = description;
         this.itemRatings = itemRatings;
     }
 
@@ -47,6 +49,14 @@ public class ItemDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public List<ItemRatingDTO> getItemRatings() {

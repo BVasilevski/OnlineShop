@@ -30,7 +30,7 @@ public class ItemAPIController {
     @GetMapping
     public ResponseEntity<List<ItemDTO>> getItems(@RequestParam(name = "category", required = false) String category) {
         List<Item> allItems = (category == null) ? itemService.findAll() : itemService.findByCategory(category);
-        List<ItemDTO> items = allItems.stream().map(item -> new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl(), null)).collect(Collectors.toList());
+        List<ItemDTO> items = allItems.stream().map(item -> new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl(), item.getDescription(), null)).collect(Collectors.toList());
         return ResponseEntity.ok(items);
     }
 

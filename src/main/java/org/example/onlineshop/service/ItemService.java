@@ -146,6 +146,6 @@ public class ItemService {
     public ItemDTO findByIdDTO(Long itemId) {
         Item item = this.findById(itemId);
         List<ItemRatingDTO> itemRatings = item.getRatings().stream().map(itemRating -> new ItemRatingDTO(itemRating.getId(), itemRating.getUser().getEmail(), itemRating.getRating(), itemRating.getComment(), itemRating.getUserImageUrl())).toList();
-        return new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl(), itemRatings);
+        return new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl(), item.getDescription(), itemRatings);
     }
 }
