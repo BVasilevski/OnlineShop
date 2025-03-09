@@ -51,10 +51,11 @@ public class ItemController {
                            @RequestParam("imageUrl") String imageUrl,
                            @RequestParam("price") float price,
                            @RequestParam("category") String category,
-                           @RequestParam("quantity") int quantity) {
+                           @RequestParam("quantity") int quantity,
+                           @RequestParam("description") String description) {
 
         LocalDate date = LocalDate.now();
-        Item item = new Item(imageUrl, price, name, Category.valueOf(category), date, quantity);
+        Item item = new Item(imageUrl, price, name, Category.valueOf(category), date, quantity, description);
         itemService.save(item);
 
         return "redirect:/items";
@@ -167,10 +168,11 @@ public class ItemController {
     public String addReviewForItem(@RequestParam Long itemId,
                                    @RequestParam String comment,
                                    @RequestParam Float rating,
+                                   @RequestParam String userImageUrl,
                                    HttpSession session) {
         Item item = itemService.findById(itemId);
         User user = (User) session.getAttribute("user");
-        ItemRating itemRating = new ItemRating(item, user, rating, comment);
+        ItemRating itemRating = new ItemRating(item, user, rating, comment, userImageUrl);
         this.itemRatingService.save(itemRating);
         return "redirect:/items";
     }
@@ -211,9 +213,10 @@ public class ItemController {
                              @RequestParam String imageUrl,
                              @RequestParam Float price,
                              @RequestParam Category category,
-                             @RequestParam Integer quantity) {
+                             @RequestParam Integer quantity,
+                             @RequestParam String description) {
         LocalDate date = LocalDate.now();
-        this.itemService.update(itemId, name, imageUrl, price, category, date, quantity);
+        this.itemService.update(itemId, name, imageUrl, price, category, date, quantity, description);
         return "redirect:/items";
     }
 

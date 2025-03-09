@@ -6,6 +6,7 @@ import org.example.onlineshop.model.ItemInCart;
 import org.example.onlineshop.model.ItemRating;
 import org.example.onlineshop.model.User;
 import org.example.onlineshop.model.dto.ItemDTO;
+import org.example.onlineshop.model.dto.ItemRatingDTO;
 import org.example.onlineshop.model.enumerations.Category;
 import org.example.onlineshop.repository.ItemRatingRepository;
 import org.example.onlineshop.repository.ItemRepository;
@@ -113,7 +114,7 @@ public class ItemService {
         return itemRepository.findAll(specification, sort);
     }
 
-    public void update(Long itemId, String name, String imageUrl, Float price, Category category, LocalDate date, int quantity) {
+    public void update(Long itemId, String name, String imageUrl, Float price, Category category, LocalDate date, int quantity, String description) {
         Item item = this.findById(itemId);
         item.setName(name);
         item.setImageUrl(imageUrl);
@@ -121,6 +122,7 @@ public class ItemService {
         item.setCategory(category);
         item.setDateCreated(date);
         item.setQuantity(quantity);
+        item.setDescription(description);
         this.itemRepository.save(item);
     }
 
@@ -143,6 +145,7 @@ public class ItemService {
 
     public ItemDTO findByIdDTO(Long itemId) {
         Item item = this.findById(itemId);
-        return new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl());
+        List<ItemRatingDTO> itemRatings = item.getRatings().stream().map(itemRating -> new ItemRatingDTO(itemRating.getId(), itemRating.getUser().getEmail(), itemRating.getRating(), itemRating.getComment(), itemRating.getUserImageUrl())).toList();
+        return new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl(), itemRatings);
     }
 }

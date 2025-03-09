@@ -35,8 +35,9 @@ public class Item {
 
     private LocalDate dateCreated;
 
-    @Column(nullable = true)
     private int quantity;
+
+    private String description;
 
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ItemInCart> cartItems;
@@ -47,13 +48,14 @@ public class Item {
     @ManyToMany(mappedBy = "items")
     private List<Order> orders;
 
-    public Item(String imageUrl, float price, String name, Category category, LocalDate date, int quantity) {
+    public Item(String imageUrl, float price, String name, Category category, LocalDate date, int quantity, String description) {
         this.imageUrl = imageUrl;
         this.price = price;
         this.name = name;
         this.category = category;
         this.dateCreated = date;
         this.quantity = quantity;
+        this.description = description;
         this.cartItems = new HashSet<>();
         this.ratings = new HashSet<>();
     }
@@ -148,5 +150,13 @@ public class Item {
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

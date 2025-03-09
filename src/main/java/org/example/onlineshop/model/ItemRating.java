@@ -2,7 +2,6 @@ package org.example.onlineshop.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @Entity
 @AllArgsConstructor
@@ -23,11 +22,14 @@ public class ItemRating {
 
     private String comment;
 
-    public ItemRating(Item item, User user, float rating, String comment) {
+    private String userImageUrl;
+
+    public ItemRating(Item item, User user, float rating, String comment, String userImageUrl) {
         this.item = item;
         this.user = user;
         this.rating = rating;
         this.comment = comment;
+        this.userImageUrl = userImageUrl;
     }
 
     public ItemRating() {
@@ -51,5 +53,9 @@ public class ItemRating {
 
     public String getComment() {
         return comment;
+    }
+
+    public String getUserImageUrl() {
+        return userImageUrl;
     }
 }

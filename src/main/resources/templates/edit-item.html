@@ -61,6 +61,12 @@
                        th:value="${item != null} ? ${item.quantity} : ''" required/>
             </div>
 
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label>
+                <input type="text" name="description" id="description" class="form-control"
+                       th:value="${item != null} ? ${item.description} : ''" required/>
+            </div>
+
             <button type="submit" class="btn btn-primary" th:text="${item != null} ? 'Update Item' : 'Create Item'">
                 Update Item
             </button>

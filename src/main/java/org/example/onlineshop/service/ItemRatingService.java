@@ -25,4 +25,9 @@ public class ItemRatingService {
     public List<ItemRating> findReviewsForItem(Item item) {
         return this.itemRatingRepository.findAllByItem(item);
     }
+
+    public void deleteRating(Long ratingId) {
+        ItemRating itemRating = itemRatingRepository.findById(ratingId).orElseThrow(() -> new RuntimeException(String.format("Rating with id %d doesn't exist", ratingId)));
+        itemRatingRepository.delete(itemRating);
+    }
 }

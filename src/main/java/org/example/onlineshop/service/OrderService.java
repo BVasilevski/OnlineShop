@@ -36,7 +36,7 @@ public class OrderService {
     public List<OrderDTO> getOrdersFromUserDTO(User user) {
         List<Order> allOrders = this.orderRepository.getOrdersByUser(user);
         return allOrders.stream().map(order -> new OrderDTO(order.getId(),
-                order.getItems().stream().map(item -> new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl())).collect(Collectors.toList()),
+                order.getItems().stream().map(item -> new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl(), null)).collect(Collectors.toList()),
                 (int) order.getTotalPrice(), order.isDelivered())).toList();
     }
 

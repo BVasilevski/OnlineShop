@@ -1,16 +1,20 @@
 package org.example.onlineshop.model.dto;
 
+import java.util.List;
+
 public class ItemDTO {
     private Long id;
     private String name;
     private float price;
     private String imageUrl;
+    private List<ItemRatingDTO> itemRatings;
 
-    public ItemDTO(Long id, String name, float price, String imageUrl) {
+    public ItemDTO(Long id, String name, float price, String imageUrl, List<ItemRatingDTO> itemRatings) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.imageUrl = imageUrl;
+        this.itemRatings = itemRatings;
     }
 
     public Long getId() {
@@ -43,5 +47,13 @@ public class ItemDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public List<ItemRatingDTO> getItemRatings() {
+        return itemRatings;
+    }
+
+    public void setItemRatings(List<ItemRatingDTO> itemRatings) {
+        this.itemRatings = itemRatings;
     }
 }

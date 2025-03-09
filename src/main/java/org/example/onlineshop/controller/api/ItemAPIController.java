@@ -30,7 +30,7 @@ public class ItemAPIController {
     @GetMapping
     public ResponseEntity<List<ItemDTO>> getItems(@RequestParam(name = "category", required = false) String category) {
         List<Item> allItems = (category == null) ? itemService.findAll() : itemService.findByCategory(category);
-        List<ItemDTO> items = allItems.stream().map(item -> new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl())).collect(Collectors.toList());
+        List<ItemDTO> items = allItems.stream().map(item -> new ItemDTO(item.getId(), item.getName(), item.getPrice(), item.getImageUrl(), null)).collect(Collectors.toList());
         return ResponseEntity.ok(items);
     }
 
@@ -48,15 +48,26 @@ public class ItemAPIController {
     public ResponseEntity<?> addReviewForItem(@PathVariable Long itemId,
                                               @RequestParam Long userId,
                                               @RequestParam float rating,
-                                              @RequestParam String comment) {
+                                              @RequestParam String comment,
+                                              @RequestParam String userImageUrl) {
         try {
             Item item = this.itemService.findById(itemId);
             User user = this.userService.findById(userId);
-            ItemRating itemRating = new ItemRating(item, user, rating, comment);
+            ItemRating itemRating = new ItemRating(item, user, rating, comment, userImageUrl);
             this.itemRatingService.save(itemRating);
             return ResponseEntity.ok("Item rating added successfully");
         } catch (RuntimeException exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete_rating/{ratingId}")
+    public ResponseEntity<?> deleteReviewForItem(@PathVariable Long ratingId) {
+        try {
+            this.itemRatingService.deleteRating(ratingId);
+            return ResponseEntity.ok("Item rating successfully deleted");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 }
