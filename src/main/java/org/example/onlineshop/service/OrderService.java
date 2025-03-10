@@ -70,4 +70,15 @@ public class OrderService {
         this.itemInCartService.removeItemsFromCart(user);
         this.orderRepository.save(order);
     }
+
+    public void cancelOrder(Long userId, Long orderId) {
+        Order order = this.orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException(String.format("Order with id %d doesn't exist", orderId)));
+        if (order.isDelivered()) {
+            throw new RuntimeException("Order is already delivered");
+        }
+        if (!order.getUser().getId().equals(userId)) {
+            throw new RuntimeException("The user is not owner of the order");
+        }
+        this.orderRepository.delete(order);
+    }
 }
